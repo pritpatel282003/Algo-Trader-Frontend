@@ -1,11 +1,10 @@
-'use client';
+import React, { Suspense } from 'react'
+import { LandingPage } from '@/component/home/LandingPage'
 
-import { LandingPage } from "@/component/home/LandingPage";
-
-
-
-export default function page() {
+export default function Page() {
   return (
-    <LandingPage/>
-  );
+    <Suspense fallback={<div>Loading login...</div>}>
+      <LandingPage />
+    </Suspense>
+  )
 }
