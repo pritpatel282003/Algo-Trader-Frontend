@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Remove default spacing */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Vertical gradient background */
+.custom-gradient {
+  background: linear-gradient(to right, #0F172A 0%, #1E3A8A 50%, #0F172A 100%);
+}

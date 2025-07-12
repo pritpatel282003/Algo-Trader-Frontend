@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { getUpstoxAccessToken } from '@/service/StaticTokenService/staticService'
 import { useDispatch } from 'react-redux'
 import { setAccessToken } from '@/redux/authSlice'
+import { message } from 'antd'
 
 export const LandingPage = () => {
   const searchParams = useSearchParams()
@@ -14,24 +15,29 @@ export const LandingPage = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const codeParam = searchParams.get('code')
-    if (codeParam) {
-      setCode(codeParam)
-      getUpstoxAccessToken(codeParam)
-        .then((res) => {
-          if (res?.data?.access_token) {
-            dispatch(setAccessToken(res.data.access_token))
-          } else {
-            setError(res?.data?.message || 'No token received')
+    const fetchAccessToken = async () => {
+      const codeParam = searchParams.get('code')
+      if (codeParam) {
+        setCode(codeParam)
+        try {
+          const response = await getUpstoxAccessToken(codeParam)
+          if (response?.data?.access_token) {
+            dispatch(setAccessToken(response.data.access_token))
           }
-        })
-        .catch((err) => setError('Token fetch failed'))
-        .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
-      setError('No code found in URL')
+        } catch (error) {
+          message.error('An unknown error occurred')
+          setError('Failed to fetch access token')
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        setError('No code found in URL')
+        setLoading(false)
+      }
     }
-  }, [searchParams])
+
+    fetchAccessToken()
+  }, [searchParams, dispatch])
 
   if (loading) return <div>Loading...</div>
   if (error) return <div className="text-red-600">Error: {error}</div>
